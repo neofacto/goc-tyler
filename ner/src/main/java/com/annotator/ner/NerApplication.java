@@ -74,7 +74,13 @@ public class NerApplication {
 			File f = new File(item.toUri());
 			try {
 				gazzetter.setDocument(Factory.newDocument(f.toURL()));
+				
+				StringBuilder bl = new StringBuilder();
+				
+				Files.readAllLines(f.toPath()).forEach(s-> bl.append(s));
+					
 				String doc = gazzetter.getDocument().getContent().toString();
+				
 				boolean french = false;
 				for(String st: stopWords) {
 					doc.contains(st);
@@ -82,11 +88,23 @@ public class NerApplication {
 					break;
 				}
 				if(french) {
-
+					
+					String editor="", title="", langue="";
+					if(bl.toString().contains("<dcterms:isPartOf>"))
+					 editor = bl.substring(bl.indexOf("<dcterms:isPartOf>"), bl.indexOf("</dcterms:isPartOf>"));
+					if(bl.toString().contains("<dc:title>"))
+					 title = bl.substring(bl.indexOf("<dc:title>"), bl.indexOf("</dc:title>"));
+					if(bl.toString().contains("<dc:language>"))
+					 langue = bl.substring(bl.indexOf("<dc:language>"), bl.indexOf("</dc:language>")); 
+			
 
 					String idStr = item.toUri().getPath().substring(item.toUri().getPath().lastIndexOf('-') + 1);
 					String id = "article:"+idStr.replaceAll(".xml", "");
 					ParsedDoc pd = new ParsedDoc();
+					pd.setEditor(editor);
+					pd.setTitre(title);
+					pd.setLangue(langue);
+					
 					pd.setId(id);
 					List<String> lines = new ArrayList<>();
 					if(doc.split(id).length==3) {
@@ -128,17 +146,13 @@ public class NerApplication {
 						for (int i = 0; i < records.size(); i++) {
 							BulkRequestBuilder bulkRequest = client.prepareBulk();
 							// Index and type is hardcoded and record.value() contains the Json message.
+							
 							Map<String, Object> map = mapper.readValue((String) new Gson().toJson(records.get(i)), new TypeReference<Map<String, Object>>() {
 							});
+							
+							
 							bulkRequest.add(client.prepareIndex("frenchnews","_doc").setSource(map));
-							/*
-							 * // Looping through the SinkRecords and the size should be less than bulksize.
-							 * for (int j = 0; j < records.get(i).getAnnots().size(); j++) { Annotation
-							 * record = records.get(i).getAnnots().get(j); // Index and type is hardcoded
-							 * and record.value() contains the Json message. map = mapper.readValue((String)
-							 * new Gson().toJson(record), new TypeReference<Map<String, Object>>() { });
-							 * bulkRequest.add(client.prepareIndex("frenchnews","_doc").setSource(map)); }
-							 */
+						
 							// Executing bulk requests.
 							BulkResponse bulkResponse = bulkRequest.execute().actionGet();
 							System.out.println(bulkResponse);

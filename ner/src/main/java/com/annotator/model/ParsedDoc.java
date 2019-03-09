@@ -15,11 +15,34 @@ public class ParsedDoc {
 	private String city;
 	private String latitute;
 	private String longitude;
+
+	private String editor;
+	private String titre;
+	private String langue; 
+	
 	private List<Annotation> annots;
 	
 	
 	
 	
+	public String getEditor() {
+		return editor;
+	}
+	public void setEditor(String editor) {
+		this.editor = editor;
+	}
+	public String getTitre() {
+		return titre;
+	}
+	public void setTitre(String titre) {
+		this.titre = titre;
+	}
+	public String getLangue() {
+		return langue;
+	}
+	public void setLangue(String langue) {
+		this.langue = langue;
+	}
 	public List<Annotation> getAnnots() {
 		return annots;
 	}

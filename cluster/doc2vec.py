@@ -11,7 +11,7 @@ class TrainModel():
     def loadData(self):
         read = ReadXML()
         self.data = read.transformData()
-        self.tagged_data = [TaggedDocument(words=word_tokenize(_d.lower()), tags=[str(i)]) for i, _d in enumerate(self.data)]
+        self.tagged_data = [TaggedDocument(words=word_tokenize(_d.lower(),language='french'), tags=[str(i)]) for i, _d in enumerate(self.data['_source']['content'])]
 
     def train(self):
         iterations = []
@@ -40,6 +40,6 @@ class TrainModel():
             # fix the learning rate, no decay
             model.min_alpha = model.alpha
 
-        model.save("d2v.model")
+        model.save("/cluster/d2v.model")
         iterations.append("Model Saved")
         return iterations
