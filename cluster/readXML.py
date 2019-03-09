@@ -3,7 +3,7 @@ import json
 
 class ReadXML():
 
-    def transformData(self):
+    def readData(self):
         headers = {
             'Content-Type': 'application/json',
         }
@@ -12,6 +12,5 @@ class ReadXML():
 
         response = requests.get('http://elasticsearch:9200/frenchnews/_search', headers=headers, params=query)
         j = json.loads(response.text)
-        for key in j['hits']['hits']:
-            return key
+        return j['hits']['hits']
 
