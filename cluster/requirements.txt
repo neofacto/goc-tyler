@@ -1,0 +1,11 @@
+Flask==1.0.2
+Flask-RESTful==0.3.7
+flask-cors==3.0.7
+numpy==1.16.2
+nltk==3.2.1
+pandas>=0.24.1
+py2neo==3.1.2
+scikit-learn==0.18.1
+gensim==3.7.1
+Sickle==0.6.4
+elasticsearch==6.0.0
