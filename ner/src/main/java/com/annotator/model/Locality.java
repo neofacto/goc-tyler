@@ -1,8 +1,13 @@
 package com.annotator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Locality {
+	@JsonProperty(value="AdministrativeCityName")
     private String cityName="";
+	@JsonProperty(value="LatLL84")
 	private String latitude="";
+	@JsonProperty(value="LonLL84")
 	private String longitude="";
 
     public String getCityName()

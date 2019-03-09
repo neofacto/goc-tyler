@@ -65,7 +65,7 @@ public class NerApplication {
 		String content = new String(Files.readAllBytes(Paths.get("src/main/resources/localities.json")));
 		ObjectMapper mapper2 = new ObjectMapper();
 		
-		Locality[] localitie = new Gson().fromJson(content,Locality[].class);
+		Locality[] localitie = mapper2.readValue(content, Locality[].class);
 		List<Locality> localities = Lists.newArrayList(localitie);
 		System.out.println(localities);
 		files.forEach(item ->{

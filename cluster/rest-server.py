@@ -37,8 +37,7 @@ def send_warnning():
 def get_cluster():
     cl = Clustering()
     cl.cluster_data()
-    print(cl.dictlist)
-    return jsonify({'cluster': ""})
+    return jsonify({'cluster': "clustering done!"})
 
 @app.route('/train_model', methods=['GET'])
 @cross_origin()
