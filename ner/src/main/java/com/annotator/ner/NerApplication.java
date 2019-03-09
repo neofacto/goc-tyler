@@ -11,18 +11,23 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
+
+import com.annotator.model.Locality;
+import com.annotator.model.ParsedDoc;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ontotext.kim.gate.KimGazetteer;
 
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.json.simple.JSONObject;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import com.annotator.model.ParsedDoc;
-import com.google.common.collect.Sets;
-import com.ontotext.kim.gate.KimGazetteer;
+import static java.util.stream.Collectors.toList;
 
 import gate.Factory;
 import gate.Gate;
@@ -51,6 +56,11 @@ public class NerApplication {
 
 		Stream<Path> files = Files.walk(Paths.get("/home/silvio/hackton/goc-tyler/export01-newspapers1841-1878/export01-newspapers1841-1878/"))
 				.filter(Files::isRegularFile);
+		
+		//load JSON file with localities
+		String content = new String(Files.readAllBytes(Paths.get("localities.json")));
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<Locality> localities = mapper.readValue(content, new TypeReference<ArrayList<Locality>>(){});
 
 		files.forEach(item ->{
 			File f = new File(item.toUri());
@@ -64,9 +74,8 @@ public class NerApplication {
 					break;
 				}
 				if(french) {
-					
-					
-					
+				
+						
 					String idStr = item.toUri().getPath().substring(item.toUri().getPath().lastIndexOf('-') + 1);
 					String id = "article:"+idStr.replaceAll(".xml", "");
 					ParsedDoc pd = new ParsedDoc();
@@ -83,16 +92,23 @@ public class NerApplication {
 						}
 
 						pd.setContent(lines.get(lines.size()-1));
+						
+						List<Locality> collected = localities.stream().filter(s->pd.getContent().contains(s.getCityName())).collect(toList());  
+
+						pd.setLocalities(collected);
+
 						gazzetter.setDocument(Factory.newDocument(pd.getContent()));
 						gazzetter.execute();
 						System.out.println(gazzetter.getDocument().getAnnotations().get("Lookup"));
+
 						IndexRequest indexRequest = new IndexRequest("frenchnews","doc")
 						        .source(jsonBuilder()
 						            .startObject()
 						                .field("doc_name", pd.getId())
 						                .field("date", pd.getDate())
 						                .field("url",pd.getUrl())
-						                .field("content",pd.getContent())
+										.field("content",pd.getContent())
+										.field("localities", pd.getLocalities())
 						                .field("annotations","")
 						            .endObject());
 						System.out.println(client.index(indexRequest).get());

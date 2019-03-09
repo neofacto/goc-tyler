@@ -1,14 +1,15 @@
 package com.annotator.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ParsedDoc {
 
 	private String id;
 	private String date;
 	private String url;
 	private String content;
-	private String city;
-	private String latitute;
-	private String longitude;
+	private List<Locality> localities;
 	
 	public String getId() {
 		return id;
@@ -34,7 +35,11 @@ public class ParsedDoc {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
-	
-	
+	public List<Locality> getLocalities(){
+		return localities;
+	}
+
+	public void setLocalities(List<Locality> locs){
+		this.localities = locs;
+	}
 }
