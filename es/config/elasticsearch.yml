@@ -1,0 +1,8 @@
+network.host: 0.0.0.0
+http.port: 9200
+transport.host: localhost
+transport.tcp.port: 9300
+xpack.security.enabled: false
+xpack.monitoring.enabled: false
+xpack.watcher.enabled: false
+xpack.graph.enabled: false
