@@ -17,18 +17,27 @@ class Clustering():
 
     def cluster_data(self):
         model = Doc2Vec.load("/cluster/d2v.model")
-        read = ReadXML()
-        data = read.transformData()
-        docs = dict()
-        for x in data['_source']:
-            docs.append(x['titre'], x['content'])
+        read = ReadXML()  
+        data = read.readData()
+        #print(data)
+        docs = []
+        print("coucou3")
+        #print(data)
+        title = dict()
+        for x in data:
+            print(x.keys())
+        #    print(x)
+        #    docs.append(str(x))
+        #for  x in data['_source']['titre']:
+        #    print(str(x))
 
+        print(title)
+        
         vectors = []
         print("inferring vectors")
         for i, t in enumerate(docs):
                 self.used_lines.append(t)
                 vec = model.infer_vector(self.preprocess_document(t))
-                print(vec)
                 vectors.append(vec)
 
         print("done")
@@ -40,9 +49,9 @@ class Clustering():
 
         # Transform this dictionary into list (if you need a list as result)
         self.dictlist = []
-        for key, value in mydict.items():
-            temp = [key,value]
-            self.dictlist.append(temp)
+        temp = []
+        print(mydict)
+        
         
         
 def get_titles_by_cluster(self, id):
