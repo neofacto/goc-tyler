@@ -1,9 +1,6 @@
 package com.annotator.ner;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
@@ -14,29 +11,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.annotator.model.Annotation;
+import com.annotator.model.Locality;
 import com.annotator.model.ParsedDoc;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.ontotext.kim.gate.KimGazetteer;
 
@@ -45,6 +35,7 @@ import gate.Gate;
 import gate.creole.ResourceInstantiationException;
 import gate.util.GateException;
 import gate.util.InvalidOffsetException;
+import static java.util.stream.Collectors.toList;
 
 @SpringBootApplication
 public class NerApplication {
@@ -67,10 +58,19 @@ public class NerApplication {
 
 		List<String> stopWords  = Files.readAllLines(Paths.get("src/main/resources/frenchStopWords.txt"));
 
-		Stream<Path> files = Files.walk(Paths.get("/home/silvio/hackton/goc-tyler/export01-newspapers1841-1878/export01-newspapers1841-1878/"))
+		Stream<Path> files = Files.walk(Paths.get(Paths.get(System.getProperty("user.dir")).getParent()+File.separator+"export01-newspapers1841-1878/export01-newspapers1841-1878/"))
 				.filter(Files::isRegularFile);
-
+		
+		//load JSON file with localities
+		String content = new String(Files.readAllBytes(Paths.get("src/main/resources/localities.json")));
+		ObjectMapper mapper2 = new ObjectMapper();
+		
+		Locality[] localitie = new Gson().fromJson(content,Locality[].class);
+		List<Locality> localities = Lists.newArrayList(localitie);
+		System.out.println(localities);
 		files.forEach(item ->{
+		
+		
 			File f = new File(item.toUri());
 			try {
 				gazzetter.setDocument(Factory.newDocument(f.toURL()));
@@ -91,11 +91,11 @@ public class NerApplication {
 					
 					String editor="", title="", langue="";
 					if(bl.toString().contains("<dcterms:isPartOf>"))
-					 editor = bl.substring(bl.indexOf("<dcterms:isPartOf>"), bl.indexOf("</dcterms:isPartOf>"));
+					 editor = bl.substring(bl.lastIndexOf("<dcterms:isPartOf>"), bl.indexOf("</dcterms:isPartOf>"));
 					if(bl.toString().contains("<dc:title>"))
-					 title = bl.substring(bl.indexOf("<dc:title>"), bl.indexOf("</dc:title>"));
+					 title = bl.substring(bl.lastIndexOf("<dc:title>"), bl.indexOf("</dc:title>"));
 					if(bl.toString().contains("<dc:language>"))
-					 langue = bl.substring(bl.indexOf("<dc:language>"), bl.indexOf("</dc:language>")); 
+					 langue = bl.substring(bl.lastIndexOf("<dc:language>"), bl.lastIndexOf("</dc:language>")); 
 			
 
 					String idStr = item.toUri().getPath().substring(item.toUri().getPath().lastIndexOf('-') + 1);
@@ -118,8 +118,20 @@ public class NerApplication {
 						}
 
 						pd.setContent(lines.get(lines.size()-1));
+						System.out.println("======================>"+localities);
+						ArrayList<Locality> collected = new ArrayList<Locality>();
+						for(Locality l: localities) {
+							if(pd!=null && pd.getContent()!=null && pd.getContent().contains(l.getCityName()))
+								collected.add(l);
+						}
+						//List<Locality> collected = localities.stream().filter(s->doc.contains(s.getCityName())).collect(toList());  
+						
+						
+						System.out.println(collected);
+						//pd.setLocalities(collected);
 						gazzetter.setDocument(Factory.newDocument(pd.getContent()));
 						gazzetter.execute();
+
 						Set<com.annotator.model.Annotation> annots = new HashSet<com.annotator.model.Annotation>();
 						gazzetter.getDocument().getAnnotations().get("Lookup").forEach(item2 ->{
 							try {
@@ -155,10 +167,9 @@ public class NerApplication {
 						
 							// Executing bulk requests.
 							BulkResponse bulkResponse = bulkRequest.execute().actionGet();
-							System.out.println(bulkResponse);
+							System.out.println(bulkResponse.getTook());
 						}
-
-
+						//System.out.println(gazzetter.getDocument().getAnnotations().get("Lookup"));
 					}
 				}
 			} catch (ResourceInstantiationException | IOException | gate.creole.ExecutionException e) {

@@ -1,4 +1,5 @@
-[
+{
+    "cities": [
         {
             "AdministrativeCityName": "Bettembourg",
             "CadastralCityName": "Bettembourg",
@@ -10875,3 +10876,4 @@
             "LatLL84": "49.745253"
         }
     ]
+}

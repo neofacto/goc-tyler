@@ -1,8 +1,9 @@
 import nltk, math, codecs
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from nltk.cluster.kmeans import KMeansClusterer
+from sklearn.cluster import KMeans
 from nltk.tokenize import word_tokenize
 import re
+import numpy as np
 from readXML import ReadXML
 from nltk.corpus import stopwords
 
@@ -18,9 +19,9 @@ class Clustering():
         model = Doc2Vec.load("/cluster/d2v.model")
         read = ReadXML()
         data = read.transformData()
-        docs = []
-        for x in data['_source']['content']:
-            docs.append(x)
+        docs = dict()
+        for x in data['_source']:
+            docs.append(x['titre'], x['content'])
 
         vectors = []
         print("inferring vectors")
@@ -32,10 +33,18 @@ class Clustering():
 
         print("done")
 
-        kclusterer = KMeansClusterer(self.NUM_CLUSTERS, distance=nltk.cluster.util.cosine_distance, repeats=25, avoid_empty_clusters=True)
-        self.assigned_clusters = kclusterer.cluster(vectors, assign_clusters=True)
+        kclusterer = KMeans(self.NUM_CLUSTERS, random_state=0)
+        kclusterer.fit(vectors)
+        # Nice Pythonic way to get the indices of the points for each corresponding cluster
+        mydict = {i: np.where(kclusterer.labels_ == i)[0] for i in range(kclusterer.n_clusters)}
 
-
+        # Transform this dictionary into list (if you need a list as result)
+        self.dictlist = []
+        for key, value in mydict.items():
+            temp = [key,value]
+            self.dictlist.append(temp)
+        
+        
 def get_titles_by_cluster(self, id):
     list = []
     for x in range(0, len(self.assigned_clusters)):
