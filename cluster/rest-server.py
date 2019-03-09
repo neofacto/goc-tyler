@@ -36,14 +36,16 @@ def send_warnning():
 @cross_origin()
 def get_cluster():
     cl = Clustering()
-    return jsonify({'cluster': cl.cluster_data()})
+    cl.cluster_data()
+    print(cl.dictlist)
+    return jsonify({'cluster': ""})
 
 @app.route('/train_model', methods=['GET'])
 @cross_origin()
 def train_model():
     tm = TrainModel()
     tm.loadData()
-    return  jsonify({'training': tm.train() })
+    return  jsonify({'cluster': tm.train() })
 
 @app.route('/parse_text', methods=['GET'])
 @cross_origin()
@@ -51,7 +53,6 @@ def parse_text():
     tm = ReadXML()
     tm.transformData()
     return  "DONE"
-
 
 
 if __name__ == '__main__':

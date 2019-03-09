@@ -1,9 +1,9 @@
 package com.annotator.model;
 
 public class Locality {
-    private String cityName;
-	private String latitude;
-	private String longitude;
+    private String cityName="";
+	private String latitude="";
+	private String longitude="";
 
     public String getCityName()
     {
@@ -35,4 +35,8 @@ public class Locality {
         this.longitude = longitude;
     }
 
+    public String toString() {
+    	return cityName;
+    }
+    
 }
