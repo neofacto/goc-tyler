@@ -71,7 +71,7 @@ body > header {
     width: 100%;
     text-align: center;
     z-index: 50;
-    padding-right: 630px;
+    padding-right: 330px;
     -webkit-transition: .5s ease-in-out;
     -moz-transition: .5s ease-in-out;
     -o-transition: .5s ease-in-out;
@@ -130,10 +130,11 @@ body > header .nav a:hover, body > header .nav a:focus, body > header .nav a:act
 }
 body > header .nav a svg {
     display: block;
-    float: left;
-    margin-right: 1rem;
     height: 2.5rem;
     fill: #C1C2C4;
+}
+body > header .nav a .link-text {
+    display: none;
 }
 body > header .nav a.selected {
     color: #6D6E71;
@@ -150,7 +151,7 @@ body > header .nav a.selected svg, body > header .nav a:hover svg, body > header
     position: fixed;
     top: 0;
     right: 0;
-    width: 580px;
+    width: 380px;
     bottom: 0;
     color: white;
     z-index: 55;
@@ -160,7 +161,7 @@ body > header .nav a.selected svg, body > header .nav a:hover svg, body > header
     transition: .5s ease-in-out;
 }
 .aside-closed .aside {
-    transform: translateX(580px);
+    transform: translateX(380px);
 }
 .aside:before {
     position: absolute;
@@ -445,24 +446,26 @@ mat-chip:after {
     height: 100vh;
 }
 .article-details {
-    bottom: 30px;
+    height: auto;
+    max-height: calc(100vh - 140px);
+    overflow: auto;
     background: #E6E7E8;
     background: rgba(230, 231, 232, 0.96);
     padding: 1.25rem;
     position: fixed;
-    right: 620px;
+    right: -100vw;
     top: 100px;
-    left: calc(100vw - 560px);
+    left: -420px;
     z-index: 54;
     -webkit-transition: .5s ease-in-out;
     -moz-transition: .5s ease-in-out;
     -o-transition: .5s ease-in-out;
     transition: .5s ease-in-out;
+    overflow: hidden;
 }
 .article-opened .article-details {
     left: 5.5rem;
 }
-
 .article-details .close {
     position: absolute;
     text-align: center;
@@ -499,4 +502,36 @@ mat-chip:after {
     text-rendering: optimizeLegibility;
     /* Support for Firefox. */
     -moz-osx-font-smoothing: grayscale;/* Support for IE. */
+}
+
+@media (min-width: 1280px) {
+body > header {
+    padding-right: 480px;
+}
+body > header .nav a svg {
+    float: left;
+    margin-right: 1rem;
+}
+body > header .nav a .link-text {
+    display: inline;
+}
+.aside {
+
+    width: 480px;
+
+}
+.aside-closed .aside {
+    transform: translateX(480px);
+}
+.article-details {
+    right: 100vw;
+    left: -100vw;
+}
+.article-details h2 {
+    min-height: 71px;
+}
+.article-opened .article-details {
+    left: 5.5rem;
+    right: 520px;
+}
 }
