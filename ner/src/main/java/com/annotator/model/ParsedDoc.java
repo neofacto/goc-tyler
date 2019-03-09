@@ -1,7 +1,13 @@
 package com.annotator.model;
 
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 public class ParsedDoc {
 
+	
+	private UUID uuid = UUID.randomUUID();
 	private String id;
 	private String date;
 	private String url;
@@ -9,7 +15,17 @@ public class ParsedDoc {
 	private String city;
 	private String latitute;
 	private String longitude;
+	private List<Annotation> annots;
 	
+	
+	
+	
+	public List<Annotation> getAnnots() {
+		return annots;
+	}
+	public void setAnnots(List<Annotation> annots) {
+		this.annots = annots;
+	}
 	public String getId() {
 		return id;
 	}
@@ -34,7 +50,29 @@ public class ParsedDoc {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	
-	
+	public String getCity() {
+		return city;
+	}
+	public void setCity(String city) {
+		this.city = city;
+	}
+	public String getLatitute() {
+		return latitute;
+	}
+	public void setLatitute(String latitute) {
+		this.latitute = latitute;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
+	public UUID getUuid() {
+		return uuid;
+	}
+	public void setUuid(UUID uuid) {
+		this.uuid = uuid;
+	}
 	
 }
