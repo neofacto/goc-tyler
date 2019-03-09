@@ -15,10 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+
+import com.annotator.model.Locality;
+import com.annotator.model.ParsedDoc;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ontotext.kim.gate.KimGazetteer;
+
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -27,6 +36,7 @@ import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.json.simple.JSONObject;
+
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,6 +49,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.ontotext.kim.gate.KimGazetteer;
+
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import static java.util.stream.Collectors.toList;
+
 
 import gate.Factory;
 import gate.Gate;
@@ -69,6 +83,11 @@ public class NerApplication {
 
 		Stream<Path> files = Files.walk(Paths.get("/home/silvio/hackton/goc-tyler/export01-newspapers1841-1878/export01-newspapers1841-1878/"))
 				.filter(Files::isRegularFile);
+		
+		//load JSON file with localities
+		String content = new String(Files.readAllBytes(Paths.get("localities.json")));
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayList<Locality> localities = mapper.readValue(content, new TypeReference<ArrayList<Locality>>(){});
 
 		files.forEach(item ->{
 			File f = new File(item.toUri());
@@ -82,7 +101,6 @@ public class NerApplication {
 					break;
 				}
 				if(french) {
-
 
 					String idStr = item.toUri().getPath().substring(item.toUri().getPath().lastIndexOf('-') + 1);
 					String id = "article:"+idStr.replaceAll(".xml", "");
@@ -100,8 +118,14 @@ public class NerApplication {
 						}
 
 						pd.setContent(lines.get(lines.size()-1));
+						
+						List<Locality> collected = localities.stream().filter(s->pd.getContent().contains(s.getCityName())).collect(toList());  
+
+						pd.setLocalities(collected);
+
 						gazzetter.setDocument(Factory.newDocument(pd.getContent()));
 						gazzetter.execute();
+
 						Set<com.annotator.model.Annotation> annots = new HashSet<com.annotator.model.Annotation>();
 						gazzetter.getDocument().getAnnotations().get("Lookup").forEach(item2 ->{
 							try {
@@ -143,8 +167,19 @@ public class NerApplication {
 							BulkResponse bulkResponse = bulkRequest.execute().actionGet();
 							System.out.println(bulkResponse);
 						}
+						System.out.println(gazzetter.getDocument().getAnnotations().get("Lookup"));
 
-
+						IndexRequest indexRequest = new IndexRequest("frenchnews","doc")
+						        .source(jsonBuilder()
+						            .startObject()
+						                .field("doc_name", pd.getId())
+						                .field("date", pd.getDate())
+						                .field("url",pd.getUrl())
+										.field("content",pd.getContent())
+										.field("localities", pd.getLocalities())
+						                .field("annotations","")
+						            .endObject());
+						System.out.println(client.index(indexRequest).get());
 					}
 				}
 			} catch (ResourceInstantiationException | IOException | gate.creole.ExecutionException e) {
