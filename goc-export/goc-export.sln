@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "goc-export", "goc-export\go
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessModel", "BusinessModel\BusinessModel.csproj", "{124C32C1-EFCE-486F-A968-37E0AA720E7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{ED8588C2-96C2-4166-B286-C5215CF63ABD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVC", "MVC\MVC.csproj", "{5DC631B6-B1C4-4E98-93A0-93D23ACA5285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +21,9 @@ Global
 		{124C32C1-EFCE-486F-A968-37E0AA720E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{124C32C1-EFCE-486F-A968-37E0AA720E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{124C32C1-EFCE-486F-A968-37E0AA720E7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED8588C2-96C2-4166-B286-C5215CF63ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED8588C2-96C2-4166-B286-C5215CF63ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED8588C2-96C2-4166-B286-C5215CF63ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED8588C2-96C2-4166-B286-C5215CF63ABD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DC631B6-B1C4-4E98-93A0-93D23ACA5285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC631B6-B1C4-4E98-93A0-93D23ACA5285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DC631B6-B1C4-4E98-93A0-93D23ACA5285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC631B6-B1C4-4E98-93A0-93D23ACA5285}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
